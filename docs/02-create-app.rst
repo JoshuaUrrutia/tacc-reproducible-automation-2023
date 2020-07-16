@@ -100,7 +100,7 @@ And look for the ``"homeDir"`` key in the json response:
 
 Ok and now we'll create a directory called `apps` where we'll store all our app bundles.
 ```
-# tapis files mkdir agave://urrutia.stampede2.storage//work/05369/urrutia/stampede2/ apps
+# tapis files mkdir agave://urrutia.stampede2.storage/work/05369/urrutia/stampede2/ apps
 tapis files mkdir agave://$USERNAME.stampede2.storage/$HOME_DIR apps
 
 Edit the .ini file
