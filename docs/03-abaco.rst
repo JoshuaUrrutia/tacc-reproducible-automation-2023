@@ -100,6 +100,7 @@ We’ve created a python wrapper to help setup the file system notifications,
 you can download the python scripts here:
 ::
   git clone https://github.com/JoshuaUrrutia/abaco_notifications.git
+  cd abaco_notifications
 
 From the abaco_notifications directory, you can run add_notify_reactor.py to
 setup a notification. For example:
@@ -113,6 +114,9 @@ If it runs successfully your response should look like:
   notification id: 18251060861323945066-242ac116-0001-011
   notification url: https://portals-api.tacc.utexas.edu//actors/v2/X4blX3Ez65qQZ/messages?x-nonce=PORTALS_basEq8g5oylx
 
+Additionally, you will be able to see the new notification using the `notifications` endpoint:
+::
+  tapis notifications list
 
 Upload and Test
 ---------------------------------
@@ -121,14 +125,14 @@ Now the only thing left to do is to test and see if our
 chain is functioning.
 
 Upload a fastq file to your FastQC directory (you can find a copy of this file in
-the ``fastqc_app/test/`` repo):
+the ``fastqc_app/tests/`` repo):
 ::
+  # tapis files upload agave://urrutia.stampede2.storage/work/05369/urrutia/stampede2/fastqc reads1.fastq.gz
   tapis files upload agave://$SYSTEM/$PATH/ $FILE
-  tapis files upload agave://urrutia.stampede2.storage/work/05369/urrutia/stampede2/fastqc reads1.fastq.gz
 
 Now that we've uploaded lets see if our actor was triggered:
 ::
-  tapis actors exces list $ACTOR_ID
+  tapis actors execs list $ACTOR_ID
 
 The response should look like:
 ::

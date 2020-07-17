@@ -86,14 +86,14 @@ Ok and now we'll create a directory called `apps` where we'll store all our app 
 
 Edit the project.ini file
 ----------------------------
-Replace the docker username and storage_path in the project.ini, with your docker username
+Replace the docker username and ``storage_path`` in the project.ini, with your docker username
 and your ``homeDir`` (the location on your storage system where you have write access).
 
 .. literalinclude:: assets/project.ini
    :linenos:
    :emphasize-lines: 7,15
 
-The contents of the project.ini file will be injected into your app definition (``app.json``):
+The contents of the ``project.ini`` file will be injected into your app definition (``app.json``):
 
 .. literalinclude:: assets/app.json
    :linenos:
