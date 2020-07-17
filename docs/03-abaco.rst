@@ -1,4 +1,4 @@
-Deploying an Abaco Reactor
+Deploying an Actor
 =======================
 
 What is a reactor? See more info in our documentation:
@@ -113,6 +113,9 @@ If it runs successfully your response should look like:
   notification id: 18251060861323945066-242ac116-0001-011
   notification url: https://portals-api.tacc.utexas.edu//actors/v2/X4blX3Ez65qQZ/messages?x-nonce=PORTALS_basEq8g5oylx
 
+
+Upload and Test
+---------------------------------
 Now the only thing left to do is to test and see if our
 ``upload -> notification -> reactor -> app``
 chain is functioning.

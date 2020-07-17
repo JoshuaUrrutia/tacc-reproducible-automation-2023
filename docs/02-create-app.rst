@@ -1,6 +1,6 @@
 .. _apps_deploy:
 
-Running Apps Deploy
+Deploying An Application
 ===============================
 We're going to take some of what we've learned from best practices and put it into, well, practice.
 Apps deploy is a CLI command that will build a docker container, push it to dockerhub,
