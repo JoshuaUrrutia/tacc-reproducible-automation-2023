@@ -65,7 +65,7 @@ Our write operations will be on to the ``rootDir`` above. If you plan on deployi
 lots of apps, it's a good idea to redefine the rootDir on your system to be a directory
 where you have write access, for example replacing the rootDir with your
 homeDir: ``/work/dir../UPDATEUSERNAME/stampede2``. This will simplify the
-structure of your app.ini file, and you won't have to lookup
+structure of your project.ini file, and you won't have to lookup
 or remember your directory number when listing and uploading files.
 
 But, to save time, since this system is already created, we'll just grab the
@@ -84,16 +84,16 @@ Ok and now we'll create a directory called `apps` where we'll store all our app 
   #tapis files mkdir agave://urrutia.stampede2.storage/work/05369/urrutia/stampede2/ apps
   tapis files mkdir agave://$USERNAME.stampede2.storage/$HOME_DIR apps
 
-Edit the app.ini file
+Edit the project.ini file
 ----------------------------
-Replace the docker username and storage_path in the app.ini, with your docker username
+Replace the docker username and ``storage_path`` in the project.ini, with your docker username
 and your ``homeDir`` (the location on your storage system where you have write access).
 
-.. literalinclude:: assets/app.ini
+.. literalinclude:: assets/project.ini
    :linenos:
    :emphasize-lines: 7,15
 
-The contents of the app.ini file will be injected into your app definition (``app.json``):
+The contents of the ``project.ini`` file will be injected into your app definition (``app.json``):
 
 .. literalinclude:: assets/app.json
    :linenos:
