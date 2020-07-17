@@ -9,12 +9,13 @@ Reproducible Science - Automation
 Tutorial on creating a reproducible python package.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Contents:
 
    01-introduction
    02-create-app
    03-abaco
+   04-troubleshooting
 
 .. toctree::
    :maxdepth: 1

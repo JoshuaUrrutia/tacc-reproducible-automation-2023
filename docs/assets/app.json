@@ -1,0 +1,46 @@
+{
+  "name": "{{ agave.username }}-{{ app.name }}",
+  "version": "{{ app.version }}",
+  "executionType": "HPC",
+  "executionSystem": "{{ agave.username }}.{{ app.hpc_system}}",
+  "parallelism": "SERIAL",
+  "deploymentPath": "{{ app.storage_path}}/apps/{{ app.name }}-{{ app.version }}",
+  "deploymentSystem": "{{ agave.username }}.{{ app.storage_system}}",
+  "defaultProcessorsPerNode": 1,
+  "defaultNodeCount": 1,
+  "defaultQueue": "normal",
+  "label": "FastQC",
+  "modules": ["load tacc-singularity"],
+  "shortDescription": "{{ app.description }}",
+  "templatePath": "runner-template.sh",
+  "testPath": "tester.sh",
+  "inputs": [
+  {
+  "id": "fastq",
+  "value": {
+    "default": "agave://data.iplantcollaborative.org/urrutia//sample/reads1.fastq.gz",
+    "visible": true,
+    "required": true
+  },
+  "semantics": {
+    "ontology": [
+      "http://edamontology.org/format_1930"
+    ]
+  },
+  "details": {
+    "label": "FASTQ sequence file"
+  }
+}
+  ],
+  "parameters": [{
+    "id": "CONTAINER_IMAGE",
+    "value": {
+      "default": "{{ docker.organization }}/{{ docker.repo }}:{{ docker.tag }}",
+      "description": "Container Image. Do not edit.",
+      "type": "string",
+      "visible": false,
+      "required": true
+    }
+  }],
+  "outputs": []
+}

@@ -1,3 +1,5 @@
+.. _apps_deploy:
+
 Running Apps Deploy
 ===============================
 We're going to take some of what we've learned from best practices and put it into, well, practice.
@@ -27,32 +29,11 @@ Or, if you want to be clever, move over the authentication directory we created 
 ::
   cp -R ~/.tapis ~/.agave
 
-Alternatively you can re-use the TAPIS container the same way we did last week:
-::
- docker run --rm -it \
-            -v ${PWD}:/work \
-            -v ${HOME}/.agave:/root/.agave \
-            -v /var/run/docker.sock:/var/run/docker.sock \
-            tacc/tapis-cli:latest \
-            bash
+`Docker CLI Tangent <02-docker-tangent.html>`_
+---------------------
 
---rm                             Automatically remove the container when it exits
--i, --interactive                    Keep STDIN open even if not attached
--t, --tty                            Allocate a pseudo-TTY
--v, --volume list                    Bind mount a volume
-
-But I wouldn't recommend this for several reasons.
-First you will be limited to writing only to subdirectories under your current directory $PWD,
-because of the local:container volume mount specified in ``-v ${PWD}:/work``.
-
-Moreover, because part of the deploy process is to build a docker container, we would
-be building a container inside of a container. Which could be useful in some cases, but
-is somewhat contrived.
-`Docker in Docker <https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/>`_
-To avoid this we can just mount our system docker into our container, so we're
-using the same docker engine to build the container inside our container.
-Notice there is an extra volume mount ``/var/run/docker.sock:/var/run/docker.sock``.
-So our system docker engine is mounted inside the container.
+You might be wondering: "Can I just re-use the TAPIS container the same way we did last week?".
+And yes, you can, but there are some caveats. `See this tangent <02-docker-tangent.html>`_ for more info.
 
 Copy an Application from Github
 ---------------------
@@ -84,8 +65,8 @@ Our write operations will be on to the ``rootDir`` above. If you plan on deployi
 lots of apps, it's a good idea to redefine the rootDir on your system to be a directory
 where you have write access, for example replacing the rootDir with your
 homeDir: ``/work/dir../UPDATEUSERNAME/stampede2``. This will simplify the
-structure of your project.ini file, and you won't have to lookup
-or remember your directory number.
+structure of your app.ini file, and you won't have to lookup
+or remember your directory number when listing and uploading files.
 
 But, to save time, since this system is already created, we'll just grab the
 absolute path to the directory where we have write access.
@@ -99,21 +80,63 @@ And look for the ``"homeDir"`` key in the json response:
   "homeDir": "/work/05369/urrutia/stampede2/"
 
 Ok and now we'll create a directory called `apps` where we'll store all our app bundles.
-```
-# tapis files mkdir agave://urrutia.stampede2.storage/work/05369/urrutia/stampede2/ apps
-tapis files mkdir agave://$USERNAME.stampede2.storage/$HOME_DIR apps
+::
+  #tapis files mkdir agave://urrutia.stampede2.storage/work/05369/urrutia/stampede2/ apps
+  tapis files mkdir agave://$USERNAME.stampede2.storage/$HOME_DIR apps
 
-Edit the .ini file
+Edit the app.ini file
 ----------------------------
-Replace the docker username and storage_path in the project.ini, with your docker username
-and your `homeDir` (the location on your storage system where you have write access).
+Replace the docker username and storage_path in the app.ini, with your docker username
+and your ``homeDir`` (the location on your storage system where you have write access).
 
-.. literalinclude:: assets/project.ini
+.. literalinclude:: assets/app.ini
    :linenos:
    :emphasize-lines: 7,15
 
+The contents of the app.ini file will be injected into your app definition (``app.json``):
+
+.. literalinclude:: assets/app.json
+   :linenos:
+   :emphasize-lines: 7,38
+
 Deploy the Application
 ----------------------------
-Deploy the application from the fastqc repo:
+All that's left now is to deploy the application from the FastQC repo:
 ::
   tapis apps deploy
+
+Which should print out a table like this:
+::
+  +--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | stage  | message                                                                                                                                                                                     |
+  +--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | build  | Step 1/4 : FROM python:3.8                                                                                                                                                                  |
+  | build  |  ---> ea8c3fb3cd86                                                                                                                                                                          |
+  |        |                                                                                                                                                                                             |
+  | build  | Step 2/4 : RUN apt-get update     && apt-get upgrade -y     && apt-get install wget -y     && apt-get install zip -y     && apt-get install default-jre -y                                  |
+  | build  |  ---> Using cache                                                                                                                                                                           |
+  |        |                                                                                                                                                                                             |
+  | build  |  ---> f0f2bd1f3194                                                                                                                                                                          |
+  |        |                                                                                                                                                                                             |
+  | build  | Step 3/4 : RUN wget https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.9.zip     && unzip fastqc_v0.11.9.zip     && rm fastqc_v0.11.9.zip     && chmod +x FastQC/fastqc |
+  | build  |  ---> Using cache                                                                                                                                                                           |
+  |        |                                                                                                                                                                                             |
+  | build  |  ---> 3bea8add49b6                                                                                                                                                                          |
+  |        |                                                                                                                                                                                             |
+  | build  | Step 4/4 : ENV PATH "/FastQC/:$PATH"                                                                                                                                                        |
+  | build  |  ---> Using cache                                                                                                                                                                           |
+  |        |                                                                                                                                                                                             |
+  | build  |  ---> cfafe349377a                                                                                                                                                                          |
+  |        |                                                                                                                                                                                             |
+  | build  | Successfully built cfafe349377a                                                                                                                                                             |
+  |        |                                                                                                                                                                                             |
+  | build  | Successfully tagged jurrutia/fastqc_app:0.11.9                                                                                                                                              |
+  |        |                                                                                                                                                                                             |
+  | push   | The push refers to repository [docker.io/jurrutia/fastqc_app]                                                                                                                               |
+  | push   | 0.11.9: digest: sha256:4ee48dae892538f83b69d6a1a7dbf099c51d3d032e44d0241518984897b5274f size: 2642                                                                                          |
+  | upload | assets/runner-template.sh                                                                                                                                                                   |
+  | upload | assets/tester.sh                                                                                                                                                                            |
+  | upload | assets/_lib/CONTAINER_IMAGE                                                                                                                                                                 |
+  | upload | assets/_lib/extend-runtime.sh                                                                                                                                                               |
+  | create | Created Tapis app urrutia-fastqc-0.11.9 revision 1                                                                                                                                          |
+  +--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+

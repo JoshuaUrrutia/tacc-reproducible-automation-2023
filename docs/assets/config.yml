@@ -12,5 +12,5 @@ fastqc:
     fastq: ""
   notifications:
     -
-      event: FAILED
-      url: jurrutia@tacc.utexas.edu
+      event: FINISHED
+      url: your@email.com

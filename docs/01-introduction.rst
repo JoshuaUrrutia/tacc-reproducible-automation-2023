@@ -37,6 +37,9 @@ Don't underestimate the time-saving value of automation! Check out this informat
 
 .. image:: https://imgs.xkcd.com/comics/is_it_worth_the_time.png
 
+This module is about 90 minutes so if this process shaves 30 seconds off of something
+you do once a week, or haves 30 minutes off something you do once a year, then 
+it's worth the time investment!
 
 Requirements
 ------------
@@ -53,4 +56,4 @@ Requirements
   * python pip
   * `Tapis CLI <https://tapis-cli.readthedocs.io/en/latest/getting-started/installing.html>`_
   * `Docker CE <https://www.docker.com/community-edition>`_
-  * Storage and Execution systems setup from the `TAPIS moudle <https://tacc.github.io/summer-institute-2020-tapis/block1/tapis-systems/>'_
+  * Storage and Execution systems setup from the `TAPIS module <https://tacc.github.io/summer-institute-2020-tapis/block1/tapis-systems>`_
