@@ -156,8 +156,7 @@ And go ahead and download the outputs of that job:
   cd $JOB_ID
   open reads1_fastqc.html
 
-
-If you want to edit and redeploy your reactor, but don't want to re-create
-the notification, you can deploy your reactor to the same actor id with:
-::
-  tapis actors deploy -I X4blX3Ez65qQZ
+Congratulations, you successfully automated part of your workflow with Tapis!
+But there's not reason to stop here, you can add a notification to your FastQC jobs
+to trigger a new reactor (to perform an alignment maybe?), and build an entirely
+automated workflow by chaining together reactors and apps.

@@ -26,6 +26,14 @@ If the reactor executed, but did not launch your app, you can check the reactor 
 ::
   tapis actors execs logs $ACTOR_ID $EXECUTION_ID
 
+You can then edit your reactor.py or config.yml as needed, and redeploy the actor.
+If you want to redeploy your reactor but don't want to re-create
+the notification, you can deploy your reactor to the same actor id with:
+::
+  #tapis actors deploy -I X4blX3Ez65qQZ
+  tapis actors deploy -I $ACTOR_ID
+
+
 Application
 -----------
 If the app launched, but you are not getting the output you expect,
@@ -34,7 +42,5 @@ you can check the app logs. Run jobs-list to find the relevant job_ID, then you 
   #tapis jobs outputs download 485458bc-335d-4d05-ae30-70de2583b6d5-007
   tapis jobs show $JOB_ID
   # and check the lastStatusMessage
-  tapis jobs outputs download
+  tapis jobs outputs download $JOB_ID
   # and check the .err and .our files
-
-  
