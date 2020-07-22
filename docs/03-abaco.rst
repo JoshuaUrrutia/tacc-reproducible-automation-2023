@@ -87,7 +87,7 @@ Now we'll create the ``fastqc`` folder on our storage system. After we create ou
 notification, any file that is uploaded here will be analyzed automatically by
 our FastQC app!
 ::
-  #tapis files mkdir agave://urrutia.stampede2.storage/work/05369/urrutia/stampede2 fastqc
+  # tapis files mkdir agave://urrutia.stampede2.storage/work/05369/urrutia/stampede2 fastqc
   tapis files mkdir agave://$USERNAME.stampede2.storage/$HOME_DIR fastqc
 
 Create File System Notifications
@@ -105,7 +105,7 @@ you can download the python scripts here:
 From the abaco_notifications directory, you can run add_notify_reactor.py to
 setup a notification. For example:
 ::
-  #python add_notify_reactor.py urrutia.stampede2.storage /work/05369/urrutia/stampede2/fastqc X4blX3Ez65qQZ
+  # python add_notify_reactor.py urrutia.stampede2.storage /work/05369/urrutia/stampede2/fastqc X4blX3Ez65qQZ
   python add_notify_reactor.py $AGAVE_SYSTEM_NAME $PATH_TO_DIRECTORY $ACTOR_ID
 
 If it runs successfully your response should look like:
@@ -113,6 +113,17 @@ If it runs successfully your response should look like:
   assocationIds = 8216966626126028310-242ac112-0001-002
   notification id: 18251060861323945066-242ac116-0001-011
   notification url: https://portals-api.tacc.utexas.edu//actors/v2/X4blX3Ez65qQZ/messages?x-nonce=PORTALS_basEq8g5oylx
+
+If there are incompatibilities with your version of python you can also use a containerized version of ``add_notify_reactor.py``:
+::
+  docker run --rm -it \
+             -v ${HOME}/.agave:/root/.agave \
+             jurrutia/add_notify_reactor:0.1 \
+             python /opt/add_notify_reactor.py \
+             $AGAVE_SYSTEM_NAME \
+             $PATH_TO_DIRECTORY \
+             $ACTOR_ID
+
 
 Additionally, you will be able to see the new notification using the `notifications` endpoint:
 ::
@@ -157,13 +168,13 @@ Finally, let's check to see if a job was submitted to our application:
   +------------------------------------------+--------------------------------+----------+
 And go ahead and download the outputs of that job:
 ::
-  #tapis jobs outputs download 485458bc-335d-4d05-ae30-70de2583b6d5-007
-  #cd 485458bc-335d-4d05-ae30-70de2583b6d5-007
+  # tapis jobs outputs download 485458bc-335d-4d05-ae30-70de2583b6d5-007
+  # cd 485458bc-335d-4d05-ae30-70de2583b6d5-007
   tapis jobs outputs download $JOB_ID
   cd $JOB_ID
   open reads1_fastqc.html
 
 Congratulations, you successfully automated part of your workflow with Tapis!
 But there's not reason to stop here, you can add a notification to your FastQC jobs
-to trigger a new reactor (to perform an alignment maybe?), and build an entirely
+to trigger a new reactor (and perform an alignment maybe?), and build an entirely
 automated workflow by chaining together reactors and apps.

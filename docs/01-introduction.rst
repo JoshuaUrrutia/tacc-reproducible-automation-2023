@@ -38,7 +38,7 @@ Don't underestimate the time-saving value of automation! Check out this informat
 .. image:: https://imgs.xkcd.com/comics/is_it_worth_the_time.png
 
 This module is about 90 minutes so if this process shaves 30 seconds off of something
-you do once a week, or haves 30 minutes off something you do once a year, then
+you do once a week, or shaves 30 minutes off something you do once a year, then
 it's worth the time investment!
 
 Requirements
