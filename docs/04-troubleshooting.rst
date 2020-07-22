@@ -4,7 +4,7 @@ Troubleshooting
 Notifications
 ------------
 If the reactor never executed, you can check the notifications
-are working by posting notifications to requestbin using the
+are working by posting notifications to ``PostBin`` using the
 ``add_notify_requestbin.py`` script in the ``abaco_notifications`` directory:
 ::
   python add_notify_requestbin.py $AGAVE_SYSTEM_NAME $PATH_TO_DIRECTORY
@@ -40,7 +40,7 @@ If the reactor executed, but did not launch your app, you can check the reactor 
 ::
   tapis actors execs logs $ACTOR_ID $EXECUTION_ID
 
-You can then edit your reactor.py or config.yml as needed, and redeploy the actor.
+You can then edit your ``reactor.py`` or ``config.yml`` as needed, and redeploy the actor.
 If you want to redeploy your reactor but don't want to re-create
 the notification, you can deploy your reactor to the same actor id with:
 ::

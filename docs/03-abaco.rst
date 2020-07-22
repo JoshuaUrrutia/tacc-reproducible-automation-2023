@@ -1,16 +1,16 @@
 Deploying an Actor
 =======================
 
-What is a reactor? See more info in our documentation:
+What is an actor? See more info in our documentation:
   * `Abaco documentation <https://tacc-cloud.readthedocs.io/projects/abaco/en/latest/>`_
   * `Abaco swagger guide <https://tacc.github.io/abaco-live-docs/>`_
 
-It's a script, that lives in the cloud, and does something for you. It's not
+Basically a Tapis actor is a script, that lives in the cloud, and does something for you. It's not
 for compute intensive jobs, that's what apps are for, it's designed to be quick,
 responsive, and lightweight.
 
-We're going deploy a reactor that will receive a notification when a file is uploaded,
-create a Tapis job.json, and submit it to our FastQC application.
+We're going to deploy an actor that will receive a notification when a file is uploaded,
+create a Tapis ``job.json``, and submit that job to our FastQC application.
 
 Copy a Reactor from Github
 ----------------------------
@@ -18,8 +18,6 @@ Copy a Reactor from Github
 Clone a Abaco reactor I created to submit FastQC jobs:
 ::
   git clone https://github.com/JoshuaUrrutia/fastqc_router_reactor.git
-
-Vignette: create a reactor from scratch with ``tapis abaco init`` (not implemented)
 
 
 Edit actor.ini and config.yml
@@ -30,15 +28,17 @@ We'll need to make edits to actor.ini so that it points to your dockerhub userna
    :linenos:
    :emphasize-lines: 7
 
-And change the name of the app in config.yml, so it matches your app id:
+And change the name of the app in ``config.yml``, so it matches your app id. And
+change the email address there so the notification is sent to your email:
 
 .. literalinclude:: assets/config.yml
   :linenos:
   :emphasize-lines: 6,16
 
-Now we create an empty secrets.json file. It's just empty in this example, but
+Now we create an empty ``secrets.json`` file. It's just empty in this example, but
 if you had passwords or credentials you wanted to be available in your actor, you
-could add those to the secrets.json.
+could add those to the secrets.json. It is included in the ``.gitignore`` file for this
+repo so you don't accidentally push a password to github.
 ::
   cp secrets.json.sample secrets.json
 
@@ -93,16 +93,16 @@ our FastQC app!
 Create File System Notifications
 ---------------------------------
 Now you’re ready to create a file system notification.
-This notification will pass a message to the fastqc_router_reactor when a file
-is uploaded to the fastqc directory on your storage system. The fastqc_router_reactor takes
-this notification, crafts a job.json, and submits a job to the fastqc_app.
+This notification will pass a message to the ``fastqc_router_reactor`` when a file
+is uploaded to the ``fastqc`` directory on your storage system. The ``fastqc_router_reactor`` takes
+this notification, crafts a ``job.json``, and submits a job to the ``fastqc_app``.
 We’ve created a python wrapper to help setup the file system notifications,
 you can download the python scripts here:
 ::
   git clone https://github.com/JoshuaUrrutia/abaco_notifications.git
   cd abaco_notifications
 
-From the abaco_notifications directory, you can run add_notify_reactor.py to
+From the ``abaco_notifications`` directory, you can run ``add_notify_reactor.py`` to
 setup a notification. For example:
 ::
   # python add_notify_reactor.py urrutia.stampede2.storage /work/05369/urrutia/stampede2/fastqc X4blX3Ez65qQZ
@@ -112,7 +112,7 @@ If it runs successfully your response should look like:
 ::
   assocationIds = 8216966626126028310-242ac112-0001-002
   notification id: 18251060861323945066-242ac116-0001-011
-  notification url: https://portals-api.tacc.utexas.edu//actors/v2/X4blX3Ez65qQZ/messages?x-nonce=PORTALS_basEq8g5oylx
+  notification url: https://portals-api.tacc.utexas.edu/actors/v2/X4blX3Ez65qQZ/messages?x-nonce=PORTALS_baTEq5E5oylx
 
 If there are incompatibilities with your version of python you can also use a containerized version of ``add_notify_reactor.py``:
 ::
@@ -125,7 +125,7 @@ If there are incompatibilities with your version of python you can also use a co
              $ACTOR_ID
 
 
-Additionally, you will be able to see the new notification using the `notifications` endpoint:
+And you can see all your notification using the ``notifications`` endpoint:
 ::
   tapis notifications list
 
@@ -175,6 +175,6 @@ And go ahead and download the outputs of that job:
   open reads1_fastqc.html
 
 Congratulations, you successfully automated part of your workflow with Tapis!
-But there's not reason to stop here, you can add a notification to your FastQC jobs
+But there is no reason to stop here, you can add a notification to your FastQC jobs
 to trigger a new reactor (and perform an alignment maybe?), and build an entirely
 automated workflow by chaining together reactors and apps.

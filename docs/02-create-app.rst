@@ -4,7 +4,8 @@ Deploying An Application
 ===============================
 We're going to take some of what we've learned from best practices and put it into, well, practice.
 Apps deploy is a CLI command that will build a docker container, push it to dockerhub,
-upload your app asset bundle to a deploymentSystem, and register your app on an executionSystem.
+upload your app asset bundle to a deploymentSystem, and register your app on
+an executionSystem all in a single step.
 Apps deploy is a single command that replaces:
 ::
   docker build -t $DOCKER_USERNAME/$DOCKER_REPO:$DOCKER_TAG -f Dockerfile
@@ -29,6 +30,12 @@ Or, if you want to be clever, move over the authentication directory we created 
 ::
   cp -R ~/.tapis ~/.agave
 
+To check Tapis is setup correctly, you can run:
+::
+  tapis systems search --public eq false
+
+and you should see the storage and executions systems we setup last week.
+
 `Docker CLI Tangent <02-docker-tangent.html>`_
 ---------------------
 
@@ -38,7 +45,7 @@ And yes, you can, but there are some caveats. `See this tangent <02-docker-tange
 Copy an Application from Github
 ---------------------
 Let's create a Tapis app to perform some analysis.
-For this example we'll create a fastqc application that is triggered when .fastq
+For this example we'll create a fastqc application that is triggered when ``.fastq``
 files are uploaded to a certain directory, but you can use any application or file type
 for this.
 
@@ -50,26 +57,25 @@ You can clone the fastqc example app from here:
 Or, if you'd like, you're welcome to use application that was created last week:
 https://tacc.github.io/summer-institute-2020-tapis/block2/apps/
 
-And later modify the reactor in the later steps to trigger off of a image file, instead
-of a .fastq file.
 
 Find deploymentPath
 ----------------------------
-Remember we created a storage system last week?
+Remember the storage system we created last week?
 
 .. literalinclude:: assets/storage.json
   :linenos:
   :emphasize-lines: 14,15
 
-Our write operations will be on to the ``rootDir`` above. If you plan on deploying
-lots of apps, it's a good idea to redefine the rootDir on your system to be a directory
+By default our write operations when we run ``tapis apps deploy`` will write to
+the ``rootDir`` above. If you plan on deploying lots of apps, it's a good idea
+to redefine the rootDir on your system to be a directory
 where you have write access, for example replacing the rootDir with your
 homeDir: ``/work/dir../UPDATEUSERNAME/stampede2``. This will simplify the
-structure of your project.ini file, and you won't have to lookup
+structure of your ``app.ini`` file, and you won't have to lookup
 or remember your directory number when listing and uploading files.
 
-But, to save time, since this system is already created, we'll just grab the
-absolute path to the directory where we have write access.
+But, since this system is already created, we'll just grab the
+absolute path to the ``homeDir`` directory where we have write access.
 
 To get a full listing of your system, run:
 ::
@@ -81,19 +87,19 @@ And look for the ``"homeDir"`` key in the json response:
 
 Ok and now we'll create a directory called `apps` where we'll store all our app bundles.
 ::
-  #tapis files mkdir agave://urrutia.stampede2.storage/work/05369/urrutia/stampede2/ apps
+  # tapis files mkdir agave://urrutia.stampede2.storage/work/05369/urrutia/stampede2/ apps
   tapis files mkdir agave://$USERNAME.stampede2.storage/$HOME_DIR apps
 
-Edit the project.ini file
+Edit the app.ini file
 ----------------------------
-Replace the docker username and ``storage_path`` in the project.ini, with your docker username
+Replace the docker username and ``storage_path`` in the ``app.ini``, with your docker username
 and your ``homeDir`` (the location on your storage system where you have write access).
 
-.. literalinclude:: assets/project.ini
+.. literalinclude:: assets/app.ini
    :linenos:
    :emphasize-lines: 7,15
 
-The contents of the ``project.ini`` file will be injected into your app definition (``app.json``):
+The contents of the ``app.ini`` file will be injected into your app definition (``app.json``):
 
 .. literalinclude:: assets/app.json
    :linenos:
