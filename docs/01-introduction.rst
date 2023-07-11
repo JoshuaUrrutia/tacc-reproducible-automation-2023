@@ -54,6 +54,11 @@ Requirements
   * Python 3
   * git
   * python pip
-  * `Tapis CLI <https://tapis-cli.readthedocs.io/en/latest/getting-started/installing.html>`_
+  * `Tapipy <https://github.com/tapis-project/tapipy/tree/main>`_
   * `Docker CE <https://www.docker.com/community-edition>`_
-  * Storage and Execution systems setup from the `TAPIS module <https://tacc.github.io/summer-institute-2020-tapis/block1/tapis-systems>`_
+  * Storage and Execution systems setup from the `Yesterday's TAPIS module <https://tapis-project.github.io/workflows-tutorial/block1/tapis-systems/>`_
+
+
+Tapis V2 Documentation
+------------
+https://tacc-reproducible-automation.readthedocs.io/en/latest/

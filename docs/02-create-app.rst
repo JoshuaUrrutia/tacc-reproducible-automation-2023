@@ -3,44 +3,47 @@
 Deploying An Application
 ===============================
 We're going to take some of what we've learned from best practices and put it into, well, practice.
-Apps deploy is a CLI command that will build a docker container, push it to dockerhub,
-upload your app asset bundle to a deploymentSystem, and register your app on
-an executionSystem all in a single step.
-Apps deploy is a single command that replaces:
+To deploy an app, we'll build a docker container, push it to dockerhub,
+publish an app definition to TAPIS.
+First we'll build a container:
 ::
   docker build -t $DOCKER_USERNAME/$DOCKER_REPO:$DOCKER_TAG -f Dockerfile
   docker push $DOCKER_USERNAME/$DOCKER_REPO:$DOCKER_TAG
-  tapis files upload agave://$DEPLOYMENT_SYSTEM/$DEPLOYMENT_PATH/ runner.sh
-  tapis apps create -F app.json
+  # or use buildx for macs with an M1 chip:
+  docker buildx build --platform linux/amd64 --push -t $DOCKER_USERNAME/$DOCKER_REPO:$DOCKER_TAG -f Dockerfile . 
 
-And we plan on adding even more in the future! Namely an automatic upload to GitHub
-so there's a source controlled snapshot of each deployment.
 
-Setup Tapis CLI
+
+Setup Tapipy Client
 ---------------------
-Let's go ahead and install the TAPIS CLI on your host system:
+If you haven't already, let's go ahead and install the TAPIS CLI on your host system:
 ::
-  pip install tapis-cli
+  pip install tapipy
 
-And re-run:
+And the open up python and instantiate a client:
 ::
-  tapis auth init
+  # Import the Tapis object
+  from tapipy.tapis import Tapis
 
-Or, if you want to be clever, move over the authentication directory we created last week:
-::
-  cp -R ~/.tapis ~/.agave
+  # Log into you the Tapis service by providing user/pass and the base url of your tenant. For example, to interact with the tacc tenant --
+  t = Tapis(base_url='https://tacc.tapis.io',
+            username='myuser',
+            password='mypass')
+      
+  # Get tokens that will be used for authentication function calls
+  t.get_tokens()
+ 
+  # Push your credentials to the public "frontera" system
+  t.systems.createUserCredential(systemId='frontera', userName='username', password='password')
+  
 
 To check Tapis is setup correctly, you can run:
 ::
-  tapis systems search --public eq false
+  t.systems.getSystems()
+  t.files.listFiles(systemId='frontera', path='.')
 
-and you should see the storage and executions systems we setup last week.
+and you should see the frontera system, and files present in the root directory.
 
-`Docker CLI Tangent <02-docker-tangent.html>`_
----------------------
-
-You might be wondering: "Can I just re-use the TAPIS container the same way we did last week?".
-And yes, you can, but there are some caveats. `See this tangent <02-docker-tangent.html>`_ for more info.
 
 Copy an Application from Github
 ---------------------
@@ -51,14 +54,12 @@ for this.
 
 You can clone the fastqc example app from here:
 ::
-  git clone https://github.com/JoshuaUrrutia/fastqc_app.git
-  cd fastqc_app
-
-Or, if you'd like, you're welcome to use application that was created last week:
-https://tacc.github.io/summer-institute-2020-tapis/block2/apps/
+  git clone https://github.com/JoshuaUrrutia/automation_resources_2023.git
+  cd automation_resources_2023/fastqc_app
 
 
-Find deploymentPath
+
+Build the Container
 ----------------------------
 Remember the storage system we created last week?
 
@@ -66,20 +67,13 @@ Remember the storage system we created last week?
   :linenos:
   :emphasize-lines: 14,15
 
-By default our write operations when we run ``tapis apps deploy`` will write to
-the ``rootDir`` above. If you plan on deploying lots of apps, it's a good idea
-to redefine the rootDir on your system to be a directory
-where you have write access, for example replacing the rootDir with your
-homeDir: ``/work/dir../UPDATEUSERNAME/stampede2``. This will simplify the
-structure of your ``app.ini`` file, and you won't have to lookup
-or remember your directory number when listing and uploading files.
 
-But, since this system is already created, we'll just grab the
-absolute path to the ``homeDir`` directory where we have write access.
-
-To get a full listing of your system, run:
+Build and push the container:
 ::
-  tapis systems show -f json $USERNAME.stampede2.storage
+  docker build -t $USERNAME/fastqc_app:3.0.0 .
+  docker push $USERNAME/fastqc_app:3.0.0
+  # or on a M1 chip
+  docker buildx build --platform linux/amd64 -t $USERNAME/fastqc_app:3.0.0 --push .
 
 And look for the ``"homeDir"`` key in the json response:
 ::
