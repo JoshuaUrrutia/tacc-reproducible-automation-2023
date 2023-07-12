@@ -2,132 +2,119 @@ Deploying an Actor
 =======================
 
 What is an actor? See more info in our documentation:
-  * `Abaco documentation <https://tacc-cloud.readthedocs.io/projects/abaco/en/latest/>`_
-  * `Abaco swagger guide <https://tacc.github.io/abaco-live-docs/>`_
+  * `Actor <https://tapis.readthedocs.io/en/latest/technical/actors.html>`_
+  * `Actors LiveDocs <https://tapis-project.github.io/live-docs/?service=Actors>`_
 
 Basically a Tapis actor is a script, that lives in the cloud, and does something for you. It's not
 for compute intensive jobs, that's what apps are for, it's designed to be quick,
 responsive, and lightweight.
 
-We're going to deploy an actor that will receive a notification when a file is uploaded,
+We're going to deploy an actor that will detect when a file is uploaded,
 create a Tapis ``job.json``, and submit that job to our FastQC application.
 
-Copy a Reactor from Github
+Create an Upload Folder
+---------------------------------
+Now we'll create the ``uploads`` folder on our storage system. After we create our
+notification, any file that is uploaded here will be analyzed automatically by
+our FastQC app! Let's ssh into frontera and create the folder w/ bash:
+::
+  ssh $USERNAME@frontera.tacc.utexas.edu
+  cdw
+  mkdir uploads
+  cd uploads
+  pwd 
+
+Make sure to copy this path, ex ``/work2/05369/urrutia/frontera/uploads`` we'll need it when we deploy the actor.
+
+
+Deploying an Actor
 ----------------------------
 
-Clone a Abaco reactor I created to submit FastQC jobs:
+We can move the the `fastqc_actor` directory in that same repository we downloaded earlier:
 ::
-  git clone https://github.com/JoshuaUrrutia/fastqc_router_reactor.git
+  cd ../fastqc_actor
 
 
-Edit actor.ini and config.yml
+Edit reactor.py
 ---------------------------------
-We'll need to make edits to actor.ini so that it points to your dockerhub username:
+Reactor.py is the script that runs when an actor is invoked.
+We'll edit the input directory here to match the input directory that you'll be using to upload data:
 
-.. literalinclude:: assets/actor.ini
+.. literalinclude:: assets/reactor.py
    :linenos:
-   :emphasize-lines: 7
+   :emphasize-lines: 10
 
-And change the name of the app in ``config.yml``, so it matches your app id. And
-change the email address there so the notification is sent to your email:
+And change the name of the app in ``job.json``, so it matches your app id:
 
-.. literalinclude:: assets/config.yml
+.. literalinclude:: assets/job.json
   :linenos:
-  :emphasize-lines: 6,16
-
-Now we create an empty ``secrets.json`` file. It's just empty in this example, but
-if you had passwords or credentials you wanted to be available in your actor, you
-could add those to the secrets.json. It is included in the ``.gitignore`` file for this
-repo so you don't accidentally push a password to github.
-::
-  cp secrets.json.sample secrets.json
+  :emphasize-lines: 3
 
 Deploy the Actor
 ---------------------------------
 All that's left is to deploy our reactor:
 ::
-  tapis actors deploy
+  import json
+  actor = {
+    "image": "jurrutia/test_actor:0.1",
+    "stateless": True,
+    "token": True#,
+    "cron": True,
+    "cron_schedule": "now + 5 minutes"
+  }
+  t.actors.create_actor(**actor)  # type: ignore
+  #t.actors.update_actor(actor_id='B741py883o7Y8', image='$USERNAME/$REPO:$TAG')
+  #t.actors.send_message(actor_id='B741py883o7Y8', message={"test":"message"})
 
 You should see a response like:
 ::
-  Building jurrutia/fastqc_router:0.1
-  Finished (27932 msec)
-  Pushing jurrutia/fastqc_router:0.1
-  Finished (9354 msec)
-  +--------+-------------------------------------------------------------------------------------------------+
-  | stage  | message                                                                                         |
-  +--------+-------------------------------------------------------------------------------------------------+
-  | build  | Step 1/1 : FROM jurrutia/reactors:python2-edge                                                  |
-  | build  | # Executing 5 build trigger                                                                     |
-  | build  | s                                                                                               |
-  | build  |  ---> Running in 34bf66e2e455                                                                   |
-  |        |                                                                                                 |
-  | build  | You must give at least one requirement to install (see "pip help install")                      |
-  |        |                                                                                                 |
-  | build  | Removing intermediate container 34bf66e2e455                                                    |
-  |        |                                                                                                 |
-  | build  |  ---> ca9ae97aef39                                                                              |
-  |        |                                                                                                 |
-  | build  | Successfully built ca9ae97aef39                                                                 |
-  |        |                                                                                                 |
-  | build  | Successfully tagged jurrutia/fastqc_router:0.1                                                  |
-  |        |                                                                                                 |
-  | push   | The push refers to repository [docker.io/jurrutia/fastqc_router]                                |
-  | push   | 0.1: digest: sha256:844f0ce2de5e03f1f15fedb64b7f5354bf64da453a18c87c6cb5c9981e6e8991 size: 6978 |
-  | create | Created Tapis actor X4blX3Ez65qQZ                                                               |
-  | cache  | Cached actor identifier to disk                                                                 |
-  +--------+-------------------------------------------------------------------------------------------------+
+  _links: 
+  executions: https://tacc.tapis.io//v3/actors/B741py883o7Y8/executions
+  owner: https://tacc.tapis.io//v3/oauth2/profiles/urrutia
+  create_time: 2023-07-11T15:58:27.624476
+  cron_next_ex: None
+  cron_on: False
+  cron_schedule: None
+  default_environment: 
 
-Copy your actor id (``X4blX3Ez65qQZ`` in the above example).
+  description: 
+  gid: None
+  hints: []
+  id: B741py883o7Y8
+  image: jurrutia/test_actor:0.1
+  last_update_time: 2023-07-11T15:58:27.624476
+  link: 
+  log_ex: None
+  max_cpus: None
+  max_workers: None
+  mem_limit: None
+  mounts: [
+  container_path: /home/tapis/runtime_files/_abaco_data1
+  host_path: /home/apim/prod/runtime_files/data1
+  mode: ro, 
+  container_path: /home/tapis/runtime_files/_abaco_data2
+  host_path: /home/apim/prod/runtime_files/data2/tacc/urrutia
+  mode: rw]
+  name: None
+  owner: urrutia
+  privileged: False
+  queue: default
+  revision: 1
+  run_as_executor: False
+  state: 
+
+  stateless: True
+  status: SUBMITTED
+  status_message: 
+  tasdir: None
+  token: True
+  type: none
+  uid: None
+  use_container_uid: False
+  webhook: 
+
+Copy your actor id (``B741py883o7Y8`` in the above example).
 If you forget the id, you can always list out your actors with ``tapis actors list``.
-
-Create a FastQC Folder
----------------------------------
-Now we'll create the ``fastqc`` folder on our storage system. After we create our
-notification, any file that is uploaded here will be analyzed automatically by
-our FastQC app!
-::
-  # tapis files mkdir agave://urrutia.stampede2.storage/work/05369/urrutia/stampede2 fastqc
-  tapis files mkdir agave://$USERNAME.stampede2.storage/$HOME_DIR fastqc
-
-Create File System Notifications
----------------------------------
-Now you’re ready to create a file system notification.
-This notification will pass a message to the ``fastqc_router_reactor`` when a file
-is uploaded to the ``fastqc`` directory on your storage system. The ``fastqc_router_reactor`` takes
-this notification, crafts a ``job.json``, and submits a job to the ``fastqc_app``.
-We’ve created a python wrapper to help setup the file system notifications,
-you can download the python scripts here:
-::
-  git clone https://github.com/JoshuaUrrutia/abaco_notifications.git
-  cd abaco_notifications
-
-From the ``abaco_notifications`` directory, you can run ``add_notify_reactor.py`` to
-setup a notification. For example:
-::
-  # python add_notify_reactor.py urrutia.stampede2.storage /work/05369/urrutia/stampede2/fastqc X4blX3Ez65qQZ
-  python add_notify_reactor.py $AGAVE_SYSTEM_NAME $PATH_TO_DIRECTORY $ACTOR_ID
-
-If it runs successfully your response should look like:
-::
-  assocationIds = 8216966626126028310-242ac112-0001-002
-  notification id: 18251060861323945066-242ac116-0001-011
-  notification url: https://portals-api.tacc.utexas.edu/actors/v2/X4blX3Ez65qQZ/messages?x-nonce=PORTALS_baTEq5E5oylx
-
-If there are incompatibilities with your version of python you can also use a containerized version of ``add_notify_reactor.py``:
-::
-  docker run --rm -it \
-             -v ${HOME}/.agave:/root/.agave \
-             jurrutia/add_notify_reactor:0.1 \
-             python /opt/add_notify_reactor.py \
-             $AGAVE_SYSTEM_NAME \
-             $PATH_TO_DIRECTORY \
-             $ACTOR_ID
-
-
-And you can see all your notification using the ``notifications`` endpoint:
-::
-  tapis notifications list
 
 Upload and Test
 ---------------------------------
