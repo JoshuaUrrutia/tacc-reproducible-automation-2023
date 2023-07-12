@@ -26,6 +26,11 @@ our FastQC app! Let's ssh into frontera and create the folder w/ bash:
 
 Make sure to copy this path, ex ``/work2/05369/urrutia/frontera/uploads`` we'll need it when we deploy the actor.
 
+And go ahead and copy this fastq file into your uploads directory:
+::
+  cp /work2/05369/urrutia/frontera/fastq/input.fastq $WORK/uploads
+  ls $WORK/uploads
+
 
 Deploying an Actor
 ----------------------------
@@ -60,7 +65,7 @@ All that's left is to deploy our reactor:
     "stateless": True,
     "token": True#,
     "cron": True,
-    "cron_schedule": "now + 5 minutes"
+    "cron_schedule": "now + 1 hour"
   }
   t.actors.create_actor(**actor)  # type: ignore
   #t.actors.update_actor(actor_id='B741py883o7Y8', image='$USERNAME/$REPO:$TAG')
@@ -114,52 +119,58 @@ You should see a response like:
   webhook: 
 
 Copy your actor id (``B741py883o7Y8`` in the above example).
-If you forget the id, you can always list out your actors with ``tapis actors list``.
+If you forget the id, you can always list out your actors with ``t.actors.list_actors()``.
 
-Upload and Test
+Test the Actor execution
 ---------------------------------
 Now the only thing left to do is to test and see if our
-``upload -> notification -> reactor -> app``
+``upload -> reactor -> app``
 chain is functioning.
 
-Upload a fastq file to your FastQC directory (you can find a copy of this file in
-the ``fastqc_app/tests/`` repo):
-::
-  # tapis files upload agave://urrutia.stampede2.storage/work/05369/urrutia/stampede2/fastqc reads1.fastq.gz
-  tapis files upload agave://$SYSTEM/$PATH/ $FILE
 
 Now that we've uploaded lets see if our actor was triggered:
 ::
-  tapis actors execs list $ACTOR_ID
+  t.actors.list_executions(actor_id='$ACTOR_ID')
 
 The response should look like:
 ::
-  urrutia$ tapis actors execs list X4blX3Ez65qQZ
-  +---------------+----------+
-  | executionId   | status   |
-  +---------------+----------+
-  | AqDao7YgEYZ6Z | COMPLETE |
-  +---------------+----------+
+  _links: 
+  owner: https://tacc.tapis.io//v3/oauth2/profiles/urrutia
+  actor_id: 8qB5RA33VMlN6
+  api_server: https://tacc.tapis.io/
+  executions: [
+  finish_time: Wed, 12 Jul 2023 20:45:54 GMT
+  id: jeOJBJyObDWo
+  message_received_time: Wed, 12 Jul 2023 20:45:38 GMT
+  start_time: Wed, 12 Jul 2023 20:45:53 GMT
+  status: COMPLETE]
+  owner: urrutia
+  total_cpu: 88536648
+  total_executions: 1
+  total_io: 180
+  total_runtime: 1
 
-If you want to see the logs from your actor execution you can run:
+If you want to see the logs from your actor execution you can run with one of the execution ids from the response above:
 ::
-  tapis actors execs logs $ACTOR_ID $EXECUTION_ID
+  t.actors.get_execution_logs(actor_id='$ACTOR_ID', execution_id='$EXECUTION_ID')
 
-Finally, let's check to see if a job was submitted to our application:
+For the first execution the logs should read:
 ::
-  tapis jobs list
-  +------------------------------------------+--------------------------------+----------+
-  | id                                       | name                           | status   |
-  +------------------------------------------+--------------------------------+----------+
-  | 485458bc-335d-4d05-ae30-70de2583b6d5-007 | fastqc_test                    | FINISHED |
-  +------------------------------------------+--------------------------------+----------+
-And go ahead and download the outputs of that job:
+  _links: 
+  execution: https://tacc.tapis.io//v3/actors/8qB5RA33VMlN6/executions/8zPjejRxNX3W1
+  owner: https://tacc.tapis.io//v3/oauth2/profiles/urrutia
+  logs: work2/05369/urrutia/frontera/uploads/input.fastq
+  Submitted Job: ea15ef53-cfe9-4191-9672-38cf5f7af970-007
+  updated submitted.txt
+
+
+We can inspect or jobs record with:
 ::
-  # tapis jobs outputs download 485458bc-335d-4d05-ae30-70de2583b6d5-007
-  # cd 485458bc-335d-4d05-ae30-70de2583b6d5-007
-  tapis jobs outputs download $JOB_ID
-  cd $JOB_ID
-  open reads1_fastqc.html
+  t.jobs.getJob(jobUuid='$JOB_UUID')
+
+And finally let's check our products folder to see if we have the output we expect:
+::
+  ls $WORK/products
 
 Congratulations, you successfully automated part of your workflow with Tapis!
 But there is no reason to stop here, you can add a notification to your FastQC jobs
