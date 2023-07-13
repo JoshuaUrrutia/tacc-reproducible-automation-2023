@@ -176,3 +176,10 @@ Congratulations, you successfully automated part of your workflow with Tapis!
 But there is no reason to stop here, you can add a notification to your FastQC jobs
 to trigger a new reactor (and perform an alignment maybe?), and build an entirely
 automated workflow by chaining together reactors and apps.
+
+Once you're finished please remove the cron or delete your actor:
+::
+  # update to remove cron
+  t.actors.update_actor(actor_id='$ACTOR_ID', image="$DOCKER_USERNAME/$REPO:$TAG", cron=False)
+  # Delete
+  t.actors.delete_actor(actor_id='$ACTOR_ID')

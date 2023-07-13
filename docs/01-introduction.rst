@@ -43,14 +43,13 @@ it's worth the time investment!
 
 Polling Vs Event-Driven Automation
 ------------
-Polling and event-driven automation have distinct benefits and drawbacks. 
-Polling ensures reliable data gathering at regular intervals, providing consistency and ease of monitoring.
+The two main automation paradigms are polling and event-driven automation. 
+Polling queries the state at regular intervals, providing consistency and ease of monitoring.
 Polling is particularly useful when dealing with systems that do not have built-in event mechanisms. 
-However, it may consume resources and is less responsive. 
+However, it may unnecessarily consume resources and is less responsive than an event-driven pipeline. 
 On the other hand, event-driven automation allows for instant responses to specific events,  minimizing latency and allowing for real-time processing.  
 This makes event-driven systems highly efficient for handling time-sensitive or critical tasks. 
-They heavily rely on the presence of events and may struggle in scenarios where events are infrequent or unpredictable.
-In such cases, the system may remain idle, awaiting triggers, which can lead to inefficiency and wasted resources. 
+However, event-driven systems typically have a more involved setup process, and logging/debuging might be difficult for end users that don't have administrative access to the event handler.
 Additionally, event-driven systems require careful design and management to ensure proper event handling and maintain system integrity.
 
 In summary, polling provides a consistent and reliable approach to data retrieval, while event-driven automation pipelines offer real-time responsiveness and adaptability. 
