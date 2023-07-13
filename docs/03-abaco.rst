@@ -35,12 +35,12 @@ And go ahead and copy this fastq file into your uploads directory:
 Deploying an Actor
 ----------------------------
 
-We can move the the `fastqc_actor` directory in that same repository we downloaded earlier:
+We can move the the ``fastqc_actor`` directory in that same repository we downloaded earlier:
 ::
   cd ../fastqc_actor
 
 
-Edit reactor.py
+Edit reactor.py, job.json and build container
 ---------------------------------
 Reactor.py is the script that runs when an actor is invoked.
 We'll edit the input directory here to match the input directory that you'll be using to upload data:
@@ -55,21 +55,28 @@ And change the name of the app in ``job.json``, so it matches your app id:
   :linenos:
   :emphasize-lines: 3
 
+Build and push the actor:
+::
+  docker build -t $USERNAME/fastqc_actor:0.0.1 .
+  docker push $USERNAME/fastqc_actor:0.0.1
+  # or on a M1 chip
+  docker buildx build --platform linux/amd64 -t $USERNAME/fastqc_actor:0.0.1 --push .
+
 Deploy the Actor
 ---------------------------------
 All that's left is to deploy our reactor:
 ::
   import json
   actor = {
-    "image": "jurrutia/test_actor:0.1",
+    "image": "$USERNAME/fastqc_actor:0.0.1",
     "stateless": True,
-    "token": True#,
+    "token": True,
     "cron": True,
-    "cron_schedule": "now + 1 hour"
+    "cron_schedule": "now + 1 week"
   }
   t.actors.create_actor(**actor)  # type: ignore
-  #t.actors.update_actor(actor_id='B741py883o7Y8', image='$USERNAME/$REPO:$TAG')
-  #t.actors.send_message(actor_id='B741py883o7Y8', message={"test":"message"})
+  # you can also manually trigger an actor with:
+  #t.actors.send_message(actor_id='$ACTOR_ID', message={"test":"message"})
 
 You should see a response like:
 ::
@@ -86,7 +93,7 @@ You should see a response like:
   gid: None
   hints: []
   id: B741py883o7Y8
-  image: jurrutia/test_actor:0.1
+  image: jurrutia/fastqc_actor:0.0.1
   last_update_time: 2023-07-11T15:58:27.624476
   link: 
   log_ex: None

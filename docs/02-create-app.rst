@@ -1,7 +1,10 @@
 .. _apps_deploy:
 
-Setup Tapipy Client and Push Credentials to Execution System
+Creating an Application
 ---------------------
+
+Setup Tapipy Client and Push Credentials to Execution System
+===============================
 If you haven't already, let's go ahead and install the ``tapipy`` on your local machine:
 ::
   pip install tapipy
