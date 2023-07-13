@@ -74,9 +74,14 @@ All that's left is to deploy our reactor:
     "cron": True,
     "cron_schedule": "now + 1 week"
   }
-  t.actors.create_actor(**actor)  # type: ignore
+  t.actors.create_actor(**actor)
+  
   # you can also manually trigger an actor with:
-  #t.actors.send_message(actor_id='$ACTOR_ID', message={"test":"message"})
+  # t.actors.send_message(actor_id='$ACTOR_ID', message={"test":"message"})
+  
+  # If you didn't build the container, you can use the one I created above,
+  # but you'll need to define upload_dir and appId in a message:
+  # t.actors.send_message(actor_id='$ACTOR_ID', message={"upload_dir":"$PATH","appId":"$APPID"})
 
 You should see a response like:
 ::
