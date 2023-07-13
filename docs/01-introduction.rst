@@ -55,7 +55,7 @@ Additionally, event-driven systems require careful design and management to ensu
 In summary, polling provides a consistent and reliable approach to data retrieval, while event-driven automation pipelines offer real-time responsiveness and adaptability. 
 Choosing between the two depends on the specific requirements of the automation task at hand, considering factors such as data frequency, system characteristics, and the importance of real-time processing.
 
-In this example we use a polling-based automation system, but if you're interested in seeing an event-driven example, see `this guide <https://tacc-reproducible-automation.readthedocs.io/en/latest/>`_` (which uses Tapis V2):
+In this example we use a polling-based automation system, but if you're interested in seeing an event-driven example, see `this guide <https://tacc-reproducible-automation.readthedocs.io/en/latest/>`_ (which uses Tapis V2):
 
 
 Requirements

@@ -3,6 +3,24 @@
 Creating an Application
 ---------------------
 
+Building A Container
+===============================
+We're going to take some of what we've learned from best practices and put it into, well, practice.
+To deploy an app, we'll build a docker container, push it to dockerhub,
+publish an app definition to TAPIS.
+
+Clone this repo locally to get a copy of the app and actor we'll be deploying:
+::
+  git clone https://github.com/JoshuaUrrutia/automation_resources_2023.git
+  cd automation_resources_2023/fastqc_app
+
+Now we can build and push a container that includes fastqc:
+::
+  docker build -t $USERNAME/fastqc_app:3.0.0 .
+  docker push $USERNAME/fastqc_app:3.0.0
+  # or on a M1 chip
+  docker buildx build --platform linux/amd64 -t $USERNAME/fastqc_app:3.0.0 --push .
+
 Setup Tapipy Client and Push Credentials to Execution System
 ===============================
 If you haven't already, let's go ahead and install the ``tapipy`` on your local machine:
@@ -32,25 +50,6 @@ To check Tapis is setup correctly, you can run:
   t.files.listFiles(systemId='frontera', path='.')
 
 and you should see the frontera system, and files present in the root directory.
-
-
-Building A Container
-===============================
-We're going to take some of what we've learned from best practices and put it into, well, practice.
-To deploy an app, we'll build a docker container, push it to dockerhub,
-publish an app definition to TAPIS.
-
-Clone this repo locally to get a copy of the app and actor we'll be deploying:
-::
-  git clone https://github.com/JoshuaUrrutia/automation_resources_2023.git
-  cd automation_resources_2023/fastqc_app
-
-Now we can build and push a container that includes fastqc:
-::
-  docker build -t $USERNAME/fastqc_app:3.0.0 .
-  docker push $USERNAME/fastqc_app:3.0.0
-  # or on a M1 chip
-  docker buildx build --platform linux/amd64 -t $USERNAME/fastqc_app:3.0.0 --push .
 
 
 Deploy an Application

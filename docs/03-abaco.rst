@@ -14,8 +14,8 @@ create a Tapis ``job.json``, and submit that job to our FastQC application.
 
 Create an Upload Folder
 ---------------------------------
-Now we'll create the ``uploads`` folder on our storage system. After we create our
-notification, any file that is uploaded here will be analyzed automatically by
+Now we'll create the ``uploads`` folder on our compute system. After we deploy our actor,
+any file that is uploaded here will be analyzed automatically by
 our FastQC app! Let's ssh into frontera and create the folder w/ bash:
 ::
   ssh $USERNAME@frontera.tacc.utexas.edu
@@ -31,6 +31,11 @@ And go ahead and copy this fastq file into your uploads directory:
   cp /work2/05369/urrutia/frontera/fastq/input.fastq $WORK/uploads
   ls $WORK/uploads
 
+.. note::
+  for those deploying mriqc it'll be:
+  ::
+    mkdir bids
+    rsync -rlt /work2/05369/urrutia/frontera/bids/ds001_BIDS $WORK/bids 
 
 Deploying an Actor
 ----------------------------
@@ -75,13 +80,15 @@ All that's left is to deploy our reactor:
     "cron_schedule": "now + 1 week"
   }
   t.actors.create_actor(**actor)
-  
+
   # you can also manually trigger an actor with:
   # t.actors.send_message(actor_id='$ACTOR_ID', message={"test":"message"})
   
-  # If you didn't build the container, you can use the one I created above,
-  # but you'll need to define upload_dir and appId in a message:
-  # t.actors.send_message(actor_id='$ACTOR_ID', message={"upload_dir":"$PATH","appId":"$APPID"})
+.. warning::
+  If you didn't build the container, you can use the one I created above,
+  but you'll need to define upload_dir and appId in a message:
+  ::
+    t.actors.send_message(actor_id='$ACTOR_ID', message={"upload_dir":"$PATH","appId":"$APPID"})
 
 You should see a response like:
 ::
