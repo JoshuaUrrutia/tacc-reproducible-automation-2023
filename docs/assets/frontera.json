@@ -21,7 +21,7 @@
             "version": null
         }
     ],
-    "jobWorkingDir": "HOST_EVAL($SCRATCH)/tapis/",
+    "jobWorkingDir": "HOST_EVAL($SCRATCH)/tapis/jobs/${JobUUID}",
     "jobEnvVariables": [],
     "jobMaxJobs": -1,
     "jobMaxJobsPerUser": -1,
