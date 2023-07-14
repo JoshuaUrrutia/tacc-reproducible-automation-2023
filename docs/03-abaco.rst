@@ -73,7 +73,7 @@ All that's left is to deploy our reactor:
 ::
   import json
   actor = {
-    "image": "jurrutia/fastqc_actor:0.0.1",
+    "image": "$USERNAME/fastqc_actor:0.0.1",
     "stateless": True,
     "token": True,
     "cron": True,
